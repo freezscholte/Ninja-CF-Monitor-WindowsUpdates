@@ -5,16 +5,22 @@ $30days = (Get-Date).AddDays(-30)
 #Filter Out results with Regex
 $Result = $history | Sort-Object Date -desc |
   Select-Object -Property Date,KB,@{l='Category';e={[string]$_.Categories[0].Name}},Title,Result `
-| Where-Object {$_.Category -match "Windows \d*" -or $_.Title -match "NET\d*" -or $_.Title -match "Cumulative\d*" -and $_.Title -notmatch "Defender Antivirus\d*"}
+| Where-Object {$_.Title -notmatch "Security Intelligence Update for Microsoft Defender Antivirus \d*"}
 
+<#
+
+Tussen filter maken foreach gaat zo niet goed en deze moet eruit $result var filteren op gt $30days
+of extra filter maken en als deze bijv. $null is dan is het goed anders niet.
+
+#>
 
 $Lastreboot = Get-CimInstance -ClassName Win32_OperatingSystem
 $LastrebootTime = $Lastreboot.LastBootUpTime
 
+#$Result | Where-Object {$_.Date -gt $30days} | Select-Object -ExpandProperty Date -First 1 | Get-Date -Format "dddd dd/MM/yyyy HH:mm"
 
 foreach ($update in $result){
 
-    $Result | Where-Object {$_.Date -gt $30days} | Select-Object -ExpandProperty Date -First 1 | Get-Date -Format "dddd dd/MM/yyyy HH:mm"
 
 if ($update.date -lt $30days -or $LastrebootTime -lt $30days) {
 
