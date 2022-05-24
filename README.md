@@ -11,5 +11,5 @@ The underlying part in the code filters out the Defender Antivirus updates, othe
 #Filter Out results with Regex
 $Result = $history | Sort-Object Date -desc |
   Select-Object -Property Date,KB,@{l='Category';e={[string]$_.Categories[0].Name}},Title,Result `
-| Where-Object {$_.Category -match "Windows \d*" -or $_.Title -match "NET\d*" -or $_.Title -match "Cumulative\d*" -and $_.Title -notmatch "Defender Antivirus\d*"}
+| Where-Object {$_.Title -notmatch "Security Intelligence Update for Microsoft Defender Antivirus \d*"}
 `
