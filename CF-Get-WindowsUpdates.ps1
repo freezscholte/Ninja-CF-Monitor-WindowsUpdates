@@ -7,22 +7,12 @@ $Result = $history | Sort-Object Date -desc |
   Select-Object -Property Date,KB,@{l='Category';e={[string]$_.Categories[0].Name}},Title,Result `
 | Where-Object {$_.Title -notmatch "Security Intelligence Update for Microsoft Defender Antivirus \d*"}
 
-<#
-
-Tussen filter maken foreach gaat zo niet goed en deze moet eruit $result var filteren op gt $30days
-of extra filter maken en als deze bijv. $null is dan is het goed anders niet.
-
-#>
 
 $Lastreboot = Get-CimInstance -ClassName Win32_OperatingSystem
 $LastrebootTime = $Lastreboot.LastBootUpTime
+$lastupdate = $result.date | Select-Object -first 1
 
-#$Result | Where-Object {$_.Date -gt $30days} | Select-Object -ExpandProperty Date -First 1 | Get-Date -Format "dddd dd/MM/yyyy HH:mm"
-
-foreach ($update in $result){
-
-
-if ($update.date -lt $30days -or $LastrebootTime -lt $30days) {
+if ($lastupdate -lt $30days -or $LastrebootTime -lt $30days) {
 
     $Output = [pscustomobject][ordered]@{
         "Last Update Date" = $Result | Where-Object {$_.Date -lt $30days} | Select-Object -ExpandProperty Date -First 1 | Get-Date -Format "dddd dd/MM/yyyy HH:mm"
@@ -48,9 +38,10 @@ else {
     }
 
     }
-}
+
 
 $Output = $Output | Format-List | Out-String
+
 
 Ninja-Property-Set windowsUpdateStatus $Output
 
