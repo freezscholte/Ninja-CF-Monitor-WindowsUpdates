@@ -24,7 +24,7 @@ function Get-WuaHistory {
     # Get a WUA Session
     $session = (New-Object -ComObject 'Microsoft.Update.Session')
     # Query the latest 1000 History starting with the first recordp
-    $history = $session.QueryHistory("",0,50) | ForEach-Object {
+    $history = $session.QueryHistory("",0,350) | ForEach-Object {
     $Result = Convert-WuaResultCodeToName -ResultCode $_.ResultCode
     # Make the properties hidden in com properties visible.
     $_ | Add-Member -MemberType NoteProperty -Value $Result -Name Result
